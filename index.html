@@ -1,0 +1,1177 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biopsies prostatiques</title>
+<style>
+:root{
+  --bg:#f2f5f9; --card:#ffffff; --ink:#1c2a39; --mut:#667587; --line:#d5dce5; --soft:#eef2f7;
+  --navy:#1f3a5f; --indigo:#3b5b92; --teal:#2e7d7a; --burg:#8c4a5f; --accent:#2e7d7a;
+  --ok:#2e7d4f; --warn:#b26a00; --err:#b3261e; --warnbg:#fff1cc; --errbg:#fde0e0;
+  --shadow:0 1px 2px rgba(20,35,55,.06),0 4px 14px rgba(20,35,55,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#10161d; --card:#18212b; --ink:#e6ecf2; --mut:#93a2b3; --line:#2b3947; --soft:#1f2b37;
+    --navy:#0e2238; --indigo:#6f93d6; --teal:#4db6ac; --burg:#d08aa0; --accent:#4db6ac;
+    --ok:#6fcf97; --warn:#f2b35b; --err:#ff8a80; --warnbg:#3b2f12; --errbg:#442020;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.35 "Segoe UI",Calibri,system-ui,-apple-system,Arial,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+
+/* ---------- top bar */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;align-items:center;gap:18px;padding:10px 22px;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.brand svg{width:26px;height:26px}
+.brand small{display:block;font-size:11px;font-weight:400;opacity:.7;margin-top:-2px}
+.pick{display:flex;align-items:center;gap:10px;margin-left:12px}
+.pick label{font-size:11px;font-weight:700;letter-spacing:.6px;opacity:.75;text-transform:uppercase}
+.pick select{min-width:340px;font-weight:700;font-size:15px;padding:8px 12px;border-radius:10px;border:2px solid #f2c94c;background:#fff8dc;color:#1f3a5f}
+.spacer{flex:1}
+.btn{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;padding:8px 14px;border-radius:9px;font-weight:600}
+.btn:hover{background:rgba(255,255,255,.18)}
+.btn kbd{font:11px ui-monospace,Consolas,monospace;opacity:.7;margin-left:6px;border:1px solid rgba(255,255,255,.3);border-radius:4px;padding:0 4px}
+
+/* ---------- layout */
+.wrap{max-width:1880px;margin:0 auto;padding:16px 22px 40px}
+.kpis{display:grid;grid-template-columns:1.3fr 1.2fr .7fr 1.6fr .6fr 1.5fr;gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:8px 14px;min-height:62px;display:flex;flex-direction:column;justify-content:center;border-left:4px solid var(--line)}
+.kpi .l{font-size:10px;font-weight:700;letter-spacing:.7px;color:var(--mut);text-transform:uppercase}
+.kpi .v{font-size:16px;font-weight:700;color:var(--navy);margin-top:2px}
+body.dark-ish .kpi .v{color:var(--ink)}
+@media (prefers-color-scheme: dark){.kpi .v{color:var(--ink)}}
+.kpi.small .v{font-size:12.5px;line-height:1.25}
+.kpi .v .g4{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:12px;font-weight:600}
+.kpi .v .g4 input{width:46px;padding:2px 5px;border:1px solid var(--line);border-radius:6px;background:var(--card);text-align:center}
+.main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(380px,1fr);gap:16px;align-items:start}
+@media (max-width:1280px){.main{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}
+
+/* ---------- cards */
+.card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+.card>header{display:flex;align-items:center;gap:10px;padding:9px 14px;color:#fff;font-weight:700;letter-spacing:.3px}
+.card>header .sp{flex:1}
+.card>header .mini{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:3px 10px;font-size:12px;font-weight:600}
+.card>header .mini:hover{background:rgba(255,255,255,.3)}
+.side-D>header{background:var(--indigo)} .side-G>header{background:var(--teal)} .side-C>header{background:var(--burg)}
+.dark .x{}
+table.grid{width:100%;border-collapse:collapse;table-layout:fixed}
+.grid th{font-size:11px;font-weight:700;color:var(--mut);text-align:center;padding:7px 4px;border-bottom:1px solid var(--line);background:var(--soft);line-height:1.15}
+.grid td{padding:2px 3px;border-bottom:1px solid var(--soft);vertical-align:middle}
+.grid tr.row:hover td{background:rgba(120,150,190,.07)}
+.grid td.pot{text-align:center;color:var(--mut);font-size:12px;width:34px}
+.grid input,.grid select{width:100%;border:1px solid transparent;background:transparent;border-radius:7px;padding:6px 6px;min-width:0}
+.grid input.c,.grid td.c input{text-align:center}
+.grid input:hover,.grid select:hover{border-color:var(--line)}
+.grid input:focus,.grid select:focus,.epn:focus{outline:none;border-color:var(--accent);background:var(--card);box-shadow:0 0 0 3px rgba(46,125,122,.22)}
+.grid input.lab{font-weight:600}
+.grid .bad{background:var(--errbg)!important;border-color:#e08a8a!important}
+.grid .warn{background:var(--warnbg)!important;border-color:#e3b04b!important}
+.epn{width:100%;border:1px solid transparent;background:transparent;border-radius:7px;padding:6px 4px;font-weight:600;color:var(--mut)}
+.epn.on{background:#fce4d6;color:#b24c0b;border-color:#f0b48f}
+.ext-envahi{background:var(--errbg)!important;color:var(--err);font-weight:700}
+.del{border:none;background:transparent;color:var(--mut);opacity:.35;font-size:16px;border-radius:6px;width:24px}
+.row:hover .del{opacity:.9} .del:hover{background:var(--errbg);color:var(--err)}
+.chip{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:20px;margin-top:2px}
+.isup1{background:#c6efce;color:#216a3a}.isup2{background:#e2f0c8;color:#4d6a12}.isup3{background:#ffeb9c;color:#7a5600}
+.isup4{background:#fcd5b4;color:#8a4300}.isup5{background:#f4b6b6;color:#8a1b1b}
+.grid input.isup1,.grid input.isup2,.grid input.isup3,.grid input.isup4,.grid input.isup5{font-weight:700;border-radius:7px}
+.grid input::placeholder{color:var(--mut);opacity:.4;font-size:12px}
+tr.tot td{background:var(--soft);font-weight:700;color:var(--navy);text-align:center;padding:6px 3px}
+@media (prefers-color-scheme: dark){tr.tot td{color:var(--ink)}}
+tr.tot td:first-child{text-align:left;padding-left:12px}
+.hint{font-size:12px;color:var(--mut);padding:6px 14px 10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hint-text{flex:1;min-width:280px}
+.turbo-toggle{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.turbo-toggle[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.turbo-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.turbo-settings{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.turbo-settings label{font-size:11px;color:var(--mut)}
+.turbo-settings select{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:7px;padding:4px 6px;font-size:12px}
+.turbo-settings input[type=range]{width:85px;accent-color:var(--teal);vertical-align:middle}
+.turbo-delay-value{font-variant-numeric:tabular-nums;min-width:42px;font-size:11px;color:var(--mut)}
+
+/* ---------- output */
+.out{position:sticky;top:78px}
+.out .card>header{background:var(--navy)}
+.out .body{padding:12px 14px}
+#concl{width:100%;min-height:170px;max-height:520px;overflow:auto;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);line-height:1.5;white-space:normal;font-family:Calibri,"Segoe UI",sans-serif;font-size:14px;font-weight:700}
+#concl:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,125,122,.22)}
+#concl div{margin:0 0 2px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pbtn{background:var(--accent);color:#fff;border:none;padding:9px 14px;border-radius:9px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.pbtn:hover{filter:brightness(1.08)} .pbtn.alt{background:var(--indigo)} .pbtn.ghost{background:var(--soft);color:var(--ink);box-shadow:none;border:1px solid var(--line)}
+.pbtn kbd{font:11px ui-monospace,Consolas,monospace;opacity:.8;margin-left:6px;border:1px solid rgba(255,255,255,.45);border-radius:4px;padding:0 4px}
+.pbtn.ghost kbd{border-color:var(--line)}
+.manual{display:none;margin-top:8px;padding:7px 10px;background:var(--warnbg);border-radius:8px;font-size:12.5px;color:var(--warn)}
+.manual.show{display:block}
+.alerts{margin-top:10px;padding:8px 12px;border-radius:9px;background:var(--warnbg);color:var(--warn);font-size:12.5px;display:none}
+.alerts.show{display:block} .alerts ul{margin:4px 0 0 16px;padding:0}
+.tprev{overflow:auto;max-height:420px;border:1px solid var(--line);border-radius:10px}
+.tprev table{border-collapse:collapse;width:100%;font-size:12px}
+.tprev th,.tprev td{border:1px solid var(--line);padding:4px 6px;text-align:center}
+.tprev th{background:var(--soft)} .tprev td.l{text-align:left}
+.tprev tr.sec td{background:var(--soft);font-weight:700;text-align:left}
+.tprev tr.tt td{font-weight:700;background:var(--soft)}
+.tprev .note{font-style:italic;text-align:left;color:var(--mut)}
+
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(30px);background:#17324f;color:#fff;padding:10px 18px;border-radius:30px;opacity:0;pointer-events:none;transition:.25s;font-weight:600;z-index:100;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- dialog */
+dialog{border:none;border-radius:16px;padding:0;width:min(1040px,94vw);max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,.45);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(10,20,32,.55)}
+.dh{display:flex;align-items:center;padding:14px 20px;background:var(--navy);color:#fff;font-size:17px;font-weight:700}
+.dh .sp{flex:1} .dh button{background:none;border:none;color:#fff;font-size:22px}
+.db{display:grid;grid-template-columns:260px 1fr;min-height:420px;max-height:calc(90vh - 130px)}
+.dl{border-right:1px solid var(--line);padding:12px;overflow:auto;background:var(--soft)}
+.dl .it{padding:9px 11px;border-radius:9px;margin-bottom:5px;cursor:pointer;font-weight:600;border:1px solid transparent}
+.dl .it:hover{background:var(--card)} .dl .it.sel{background:var(--card);border-color:var(--accent);box-shadow:var(--shadow)}
+.dr{padding:16px 20px;overflow:auto}
+.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin:10px 0 4px}
+.dr input[type=text],.dr input[type=number]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.sl{display:grid;grid-template-columns:1fr 70px 28px;gap:5px;margin-bottom:5px;align-items:center}
+.df{display:flex;gap:8px;align-items:center;padding:12px 20px;border-top:1px solid var(--line);flex-wrap:wrap}
+.df .sp{flex:1}
+.small{font-size:12px;color:var(--mut)}
+.turbo-note{font-size:11.5px;color:var(--mut);max-width:520px;line-height:1.3}
+[hidden]{display:none!important}
+.btn.mic.on{background:#c62828;border-color:#ff8a80;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,80,80,.55)}50%{box-shadow:0 0 0 7px rgba(255,80,80,0)}}
+#voiceBar{position:fixed;left:50%;transform:translateX(-50%);bottom:72px;z-index:60;max-width:min(980px,94vw);background:#16293d;color:#fff;border-radius:16px;padding:10px 16px;box-shadow:0 10px 34px rgba(0,0,0,.4);display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+#voiceBar .vdot{width:11px;height:11px;border-radius:50%;background:#ff5252;animation:pulse 1.4s infinite}
+#voiceBar .vlive{opacity:.65;font-style:italic;min-width:120px}
+#voiceBar .vlast{font-weight:600;color:#9be7c4}
+#voiceBar .vlast.err{color:#ff8a80}
+#voiceBar .vsnd{font-size:12px;opacity:.9;cursor:pointer;white-space:nowrap}
+#voiceBar .btn{padding:4px 12px}
+#voiceBar .vhelp{flex-basis:100%;font-size:12px;opacity:.9}
+#voiceBar .vhelp summary{cursor:pointer;font-weight:600}
+#voiceBar .vhelp div{margin-top:6px;line-height:1.55}
+#voiceBar code{background:rgba(255,255,255,.12);border-radius:5px;padding:0 5px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>
+    <div>Biopsies prostatiques<small>saisie rapide &amp; compte rendu</small></div>
+  </div>
+  <div class="pick"><label for="model">Modèle de prélèvement</label><select id="model"></select></div>
+  <div class="spacer"></div>
+  <button class="btn mic" id="bMic" title="Dictée vocale (Alt+M)">🎤 Dictée<kbd>Alt+M</kbd></button>
+  <button class="btn" id="bNew" title="Efface la saisie (Alt+N)">Nouveau dossier<kbd>Alt+N</kbd></button>
+  <button class="btn" id="bModels">⚙ Modèles</button>
+</div>
+
+<div class="wrap">
+  <div class="kpis">
+    <div class="kpi" id="kG"><div class="l">Gleason le plus péjoratif</div><div class="v" id="vG">–</div></div>
+    <div class="kpi"><div class="l">Tumeur</div><div class="v" id="vT">–</div></div>
+    <div class="kpi"><div class="l">Positives</div><div class="v" id="vP">–</div></div>
+    <div class="kpi small"><div class="l">Sites atteints</div><div class="v" id="vS">–</div></div>
+    <div class="kpi"><div class="l">EPN</div><div class="v" id="vE">–</div></div>
+    <div class="kpi"><div class="l">Extension extraprostatique</div><div class="v" id="vX">–</div></div>
+  </div>
+
+  <div class="main">
+    <div id="entry">
+      <section class="card side-D" data-side="D"></section>
+      <section class="card side-G" data-side="G"></section>
+      <section class="card side-C" data-side="C"></section>
+      <div class="hint"><span class="hint-text">Astuces : <b>Entrée</b> = champ suivant · <b>← → ↑ ↓</b> = navigation dans le tableau · Gleason : tapez <b>34</b>, <b>4+3</b>, <b>55</b>… · Extension : tapez <b>e</b> (envahi), <b>s</b> (sain), <b>n</b> (non vu) · clic sur « non » = engainements périnerveux « oui ».</span><button type="button" class="turbo-toggle" id="turboToggle" aria-pressed="false">TURBO intelligent : désactivé</button><span class="turbo-note">saute au champ suivant dès qu'un chiffre est saisi <b>après la virgule</b> (ex. 12,5) · Nbr / atteintes : 1 chiffre · Gleason : score complet · taille entière : <b>,0</b> ou Entrée</span></div>
+    </div>
+
+    <aside class="out">
+      <div class="card">
+        <header>Compte rendu<span class="sp"></span><span style="font-weight:400;font-size:12px;opacity:.8">modifiable avant copie</span></header>
+        <div class="body">
+          <div id="concl" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="false"></div>
+          <div class="manual" id="manual">✎ Texte modifié à la main : la mise à jour automatique est suspendue. <a href="#" id="regen" style="color:inherit;font-weight:700">Régénérer</a></div>
+          <div class="alerts" id="alerts"></div>
+          <div class="actions">
+            <button class="pbtn" id="cCon">Copier la conclusion<kbd>Alt+1</kbd></button>
+            <button class="pbtn alt" id="cTab">Copier le tableau<kbd>Alt+2</kbd></button>
+            <button class="pbtn ghost" id="cAll">Tableau + conclusion<kbd>Alt+3</kbd></button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <header style="background:var(--navy)">Aperçu du tableau (collé tel quel dans Word)</header>
+        <div class="body"><div class="tprev" id="tprev"></div></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <div class="dh">Modèles de prélèvement<span class="sp"></span><button id="dClose" aria-label="Fermer">✕</button></div>
+  <div class="db">
+    <div class="dl" id="dList"></div>
+    <div class="dr" id="dForm"></div>
+  </div>
+  <div class="df">
+    <button class="pbtn ghost" id="dAdd">+ Nouveau</button>
+    <button class="pbtn ghost" id="dDup">Dupliquer</button>
+    <button class="pbtn ghost" id="dDel">Supprimer</button>
+    <span class="sp"></span>
+    <button class="pbtn ghost" id="dExp">Exporter</button>
+    <button class="pbtn ghost" id="dImp">Importer</button>
+    <button class="pbtn ghost" id="dRst">Modèles d'origine</button>
+    <input type="file" id="dFile" accept=".json,application/json" hidden>
+    <button class="pbtn" id="dSave">Enregistrer</button>
+  </div>
+</dialog>
+<div id="voiceBar" hidden>
+  <span class="vdot"></span><b>Dictée active</b>
+  <span id="voiceLive" class="vlive">parlez…</span>
+  <span id="voiceLast" class="vlast"></span>
+  <label class="vsnd"><input type="checkbox" id="voiceSnd"> 🔊 son</label>
+  <button class="btn" id="voiceFlag" type="button" title="La dernière phrase a été mal interprétée sans alerte : la signaler">⚑ Mal compris</button>
+  <button class="btn" id="voiceLogBtn" type="button" title="Journal des phrases non reconnues">📒 Journal (0)</button>
+  <button class="btn" id="voiceStop" type="button">Arrêter</button>
+  <details class="vhelp"><summary>Commandes vocales</summary><div>
+    <b>1. Les tailles</b> (notées par le technicien) : dictez-les à la suite, <code>douze virgule cinq · huit · dix virgule trois</code> (dites <code>tailles</code> pour recommencer en haut).<br>
+    <b>2. Aller à un bloc</b> (selon les numéros du modèle : Maire commence à gauche par 1) : <code>en 2</code> · <code>ligne 2</code> · <code>bloc 2</code> · <code>gauche 2</code> / <code>droite 2</code> (position dans le côté) (la ligne reste verrouillée jusqu'à <code>en N</code>, <code>ligne suivante</code> ou <code>tailles</code>).<br>
+    <b>3. Nombre de biopsies</b> : <code>en 2 il y a 3 biopsies</code> · <code>3 biopsies</code> (ligne en cours) &nbsp;·&nbsp; <b>corriger une taille</b> : <code>en 2 la taille est 10,3</code><br>
+    <b>4. Tumeur</b> (dans l'ordre où vous la voyez, sur la ligne en cours) : <code>3+3</code> ou <code>trois plus trois</code> ou <code>Gleason 3+4</code> · <code>atteintes 2</code> / <code>2 biopsies atteintes</code> · <code>ADK 4,2</code> / <code>taille de la tumeur 4,2</code><br>
+    <b>5. Engainement</b> : <code>engainement</code> · <code>EPN</code> · <code>présence d'engainement péri-nerveux</code> → oui ; <code>pas d'engainement</code> · <code>engainement non</code> → non<br>
+    <b>6. Extension</b> : <code>extension oui</code> · <code>tissu adipeux envahi</code> · <code>graisse envahie</code> · <code>tissu extra-prostatique non envahi</code><br>
+    <b>Retour sonore</b> : tick = compris · deux notes graves + message rouge = mal compris (ex. « ,3 » sans le 1er chiffre) → répétez la valeur.<br>
+    <b>Divers</b> : <code>négatif</code> (vide la ligne et passe à la suivante) · <code>suivant</code> / <code>ok</code> · <code>précédent</code> · <code>effacer</code> · <code>annuler</code> (défait la dernière phrase) · <code>commentaire …</code> · <code>copier conclusion</code> · <code>copier tableau</code> · <code>stop</code><br>
+    Plusieurs commandes dans la même phrase sont possibles : <code>en trois trois plus quatre engainement oui graisse envahie</code>
+  </div></details>
+</div>
+<dialog id="vlogDlg" style="background:#1d2630;color:#e8eef5;border:1px solid #3a4756;border-radius:12px;padding:18px;max-width:760px;width:92vw">
+  <b style="font-size:16px">📒 Journal vocal (phrases non reconnues ou signalées)</b>
+  <p style="font-size:12px;opacity:.8;margin:6px 0 10px"><span id="vlogWhere"></span> Il ne contient que le texte dicté : ne dictez aucune identité de patient. Exportez-le pour le transmettre à Claude afin d'améliorer la reconnaissance.</p>
+  <div id="vlogList" style="max-height:46vh;overflow:auto;font-size:12.5px;border:1px solid #3a4756;border-radius:8px;padding:6px"></div>
+  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+    <button class="btn" id="vlogExport" type="button">⬇ Exporter (.json)</button>
+    <button class="btn" id="vlogCopy" type="button">Copier</button>
+    <button class="btn" id="vlogClear" type="button">Vider</button>
+    <span style="flex:1"></span>
+    <button class="btn" id="vlogClose" type="button">Fermer</button>
+  </div>
+</dialog>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   Données de référence
+   ===================================================================== */
+const GLEASON = [
+  {k:"3+3", s:"6(3+3). Grade ISUP1", isup:1},
+  {k:"3+4", s:"7(3+4).                 Grade ISUP2. G4=#%", isup:2},
+  {k:"4+3", s:"7(4+3).                 Grade ISUP3. G4=#%", isup:3},
+  {k:"4+4", s:"8(4+4). Grade ISUP4", isup:4},
+  {k:"5+3", s:"8(5+3). Grade ISUP4", isup:4},
+  {k:"3+5", s:"8(3+5). Grade ISUP4", isup:4},
+  {k:"4+5", s:"9(4+5). Grade ISUP5", isup:5},
+  {k:"5+4", s:"9(5+4). Grade ISUP5", isup:5},
+  {k:"5+5", s:"10(5+5). Grade ISUP5", isup:5},
+];
+const INF = "ADENOCARCINOME PROSTATIQUE INFILTRANT", SIMPLE = "ADENOCARCINOME PROSTATIQUE";
+const sites = (labels,n)=>labels.map(l=>({l,n}));
+const DEFAULT_TEMPLATES = [
+  {id:"classique", name:"Classique · 3 sites × 2 carottes", titre:INF,
+   right:sites(["Apex","Milieu","Base"],2), left:sites(["Base","Milieu","Apex"],2)},
+  {id:"pages", name:"Pages · 5 sites × 1 carotte", titre:INF,
+   right:sites(["Base","médiane haute","Milieu","médiane basse","Apex"],1), left:sites(["Base","médiane haute","Milieu","médiane basse","Apex"],1)},
+  {id:"pots6", name:"Pots D1–D6 / G1–G6 · 2 carottes (+ ciblées)", titre:SIMPLE,
+   right:sites(["D1,D2","D3,D4","D5,D6"],2), left:sites(["G1,G2","G3,G4","G5,G6"],2)},
+  {id:"messaoud", name:"Messaoud · 6 sites × 1 carotte", titre:SIMPLE,
+   right:sites(["partie moyenne latérale","Apex latéral","Base latérale","Apex médian","Base médiane","zone antérieure"],1),
+   left:sites(["partie moyenne latérale","Apex latéral","Base latérale","Apex médian","Base médiane","zone antérieure"],1)},
+  {id:"croises", name:"Pots croisés · 3 sites × 2 carottes", titre:INF,
+   right:sites(["Base (D1,D4)","Milieu (D2,D5)","Apex (D3,D6)"],2), left:sites(["Base (G1,G4)","Milieu (G2,G5)","Apex (G3,G6)"],2)},
+  {id:"numerotes", name:"Pots numérotés (1 et 2 · 3 et 4 · 5)", titre:INF,
+   right:[{l:"Base (1 et 2)",n:2},{l:"Milieu (3 et 4)",n:2},{l:"Apex (5)",n:1}],
+   left:[{l:"Base (6 et 7)",n:2},{l:"Milieu (8 et 9)",n:2},{l:"Apex (10)",n:1}]},
+  {id:"kibib", name:"Kibib · D1-D6 / G1-G6", titre:INF,
+   right:sites(["D1,D2 · Base","D3,D4 · Milieu","D5,D6 · Apex"],2),
+   left:sites(["G1,G2 · Base","G3,G4 · Milieu","G5,G6 · Apex"],2)},
+  {id:"bah-clozel", name:"Bah-Clozel · 6 pots numérotés", titre:INF,
+   right:sites(["1 · Apex","2 · Milieu","3 · Base"],1),
+   left:sites(["4 · Base","5 · Milieu","6 · Apex"],1)},
+  {id:"maire", name:"Maire · 12 pots numérotés", titre:INF,
+   right:sites(["7 et 8 · Apex","9 et 10 · Milieu","11 et 12 · Base"],2),
+   left:sites(["1 et 2 · Apex","3 et 4 · Milieu","5 et 6 · Base"],2)},
+  {id:"rabia", name:"Rabia · pots croisés D1/D4 et G1/G4", titre:INF,
+   right:sites(["D1,D4 · Base","D2,D5 · Milieu","D3,D6 · Apex"],2),
+   left:sites(["G1,G4 · Base","G2,G5 · Milieu","G3,G6 · Apex"],2)},
+  {id:"rotondo-echo", name:"Rotondo et Echo · 12 pots", titre:INF,
+   right:sites(["7 et 8","9 et 10","11 et 12"],2),
+   left:sites(["1 et 2","3 et 4","5 et 6"],2)},
+];
+const SIDES = {D:"Biopsies du côté droit", G:"Biopsies du côté gauche", C:"Biopsies ciblées"};
+const MORPHO = "Aspect morphologique contrôlé par le cocktail immunohistochimique p504s/p63.";
+
+/* =====================================================================
+   Stockage local (uniquement les MODÈLES — jamais de données patient)
+   ===================================================================== */
+const store = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } },
+};
+let TPL;
+try{ TPL = JSON.parse(store.get("pbx.templates.v1")||"null"); }catch(e){ TPL=null; }
+if(!Array.isArray(TPL) || !TPL.length) TPL = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES));
+else {
+  // Ajoute les nouveaux modèles par défaut aux installations existantes sans toucher aux modèles personnalisés.
+  const known = new Set(TPL.map(t=>t.id));
+  const additions = DEFAULT_TEMPLATES.filter(t=>!known.has(t.id));
+  additions.forEach(t=>TPL.push(JSON.parse(JSON.stringify(t))));
+  if(additions.length) store.set("pbx.templates.v1", JSON.stringify(TPL));
+}
+const saveTpl = ()=> store.set("pbx.templates.v1", JSON.stringify(TPL));
+
+/* =====================================================================
+   État
+   ===================================================================== */
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const state = { modelId:null, rows:{D:[],G:[],C:[]}, g4:"", manual:false };
+const tpl = ()=> TPL.find(t=>t.id===state.modelId) || TPL[0];
+const blankRow = (l="",n="")=>({l, n:String(n), taille:"", att:"", adk:"", gl:"", epn:false, ext:"", comm:""});
+
+function buildRows(){
+  const t = tpl();
+  state.rows.D = t.right.map(s=>blankRow(s.l,s.n));
+  state.rows.G = t.left.map(s=>blankRow(s.l,s.n));
+  state.rows.C = [blankRow()];
+  state.g4 = ""; state.manual = false;
+}
+
+/* ---------- utilitaires numériques (virgule française acceptée) */
+const num = v=>{ const s=String(v??"").trim().replace(",","."); if(s==="") return null; const x=Number(s); return Number.isFinite(x)?x:NaN; };
+const n0 = v=>{ const x=num(v); return (x===null||Number.isNaN(x))?0:x; };
+const fmt = x=> (Math.round(x*100)/100).toString().replace(".",",");
+const parseGl = v=>{
+  const s=String(v??"").trim(); if(!s) return -1;
+  const m=s.match(/([3-5])\D*([3-5])/); if(!m) return -2;
+  const i=GLEASON.findIndex(g=>g.k===m[1]+"+"+m[2]); return i<0?-2:i;
+};
+const glNorm = v=>{ const i=parseGl(v); return i>=0?GLEASON[i].k:v; };
+
+/* Ordre d'affichage des côtés : si les sites sont numérotés par bloc (Maire, Rotondo…) et que la gauche porte les plus petits numéros,
+   la gauche passe en premier (1 à 6 puis 7 à 12). Sinon : droite puis gauche. */
+function sideOrder(){
+  const mins={};
+  for(const sd of ["D","G"]){
+    const rows=(state.rows[sd]||[]).filter(r=>r.l);
+    if(!rows.length||rows.some(r=>!/\d/.test(r.l)||/[DG]\s*\d/i.test(r.l))) return ["D","G","C"];
+    mins[sd]=Math.min(...rows.map(r=>Math.min(...(r.l.match(/\d+/g)||[]).map(Number))));
+  }
+  return mins.G<mins.D ? ["G","D","C"] : ["D","G","C"];
+}
+function rowHasData(r){ return !!(r.taille||r.att||r.adk||r.gl||r.epn||r.ext||r.comm); }
+function isDirty(){
+  return ["D","G","C"].some(s=>state.rows[s].some(r=>rowHasData(r) || (s==="C" && r.l)));
+}
+
+/* =====================================================================
+   Calculs
+   ===================================================================== */
+function compute(){
+  const res = {tot:{D:{},G:{},C:{},A:{}}, glIdx:-1, epn:false, env:0, nv:0, sain:0, pos:{D:[],G:[],C:[]}, issues:[], rowInfo:{D:[],G:[],C:[]}, pot:{D:[],G:[],C:[]}};
+  let potN = 0;
+  for(const s of sideOrder()){
+    const T = {nbr:0, taille:0, att:0, adk:0};
+    state.rows[s].forEach((r,i)=>{
+      const nb=n0(r.n), ta=n0(r.taille), at=n0(r.att), ad=n0(r.adk);
+      T.nbr+=nb; T.taille+=ta; T.att+=at; T.adk+=ad;
+      const active = !!(r.l || rowHasData(r));
+      res.pot[s][i] = active ? ++potN : "";
+      const pos = at>0 || ad>0;
+      const gi = parseGl(r.gl);
+      if(gi>res.glIdx) res.glIdx=gi;
+      if(r.epn) res.epn=true;
+      if(r.ext==="oui") res.env++; if(r.ext==="non") res.sain++;
+      const label = r.l || ("ligne "+(i+1));
+      if(pos) res.pos[s].push(label);
+      const info = {};
+      const bads = [];
+      for(const [f,name] of [["n","Nbr"],["taille","Taille"],["att","Atteintes"],["adk","Taille ADK"]]){
+        if(Number.isNaN(num(r[f]))){ info[f]="bad"; bads.push(`${name} : valeur non numérique`); }
+      }
+      if(at>nb && !info.att){ info.att="bad"; bads.push(`${at} biopsie(s) atteinte(s) pour ${nb} biopsie(s)`); }
+      if(ad>ta && !info.adk){ info.adk="bad"; bads.push(`taille ADK (${fmt(ad)} mm) > taille de la carotte (${fmt(ta)} mm)`); }
+      if(gi===-2){ info.gl="bad"; bads.push("score de Gleason non reconnu (ex. 3+4)"); }
+      else if(pos && gi===-1){ info.gl="warn"; bads.push("tumeur sans score de Gleason"); }
+      else if(!pos && gi>=0){ info.gl="warn"; bads.push("Gleason renseigné sans tumeur"); }
+      if(bads.length) res.issues.push({side:s,label,msgs:bads});
+      res.rowInfo[s][i]=info;
+    });
+    res.tot[s]=T;
+  }
+  for(const k of ["nbr","taille","att","adk"]) res.tot.A[k]=res.tot.D[k]+res.tot.G[k]+res.tot.C[k];
+  res.ext = res.env>0 ? "oui" : (res.sain>0 ? "non" : "#");
+  const parts=[];
+  if(res.pos.D.length) parts.push(`du côté droit (${res.pos.D.join(", ")})`);
+  if(res.pos.G.length) parts.push(`du côté gauche (${res.pos.G.join(", ")})`);
+  if(res.pos.C.length) parts.push(`des biopsies ciblées (${res.pos.C.join(", ")})`);
+  res.sites = parts.length ? parts.join(", ") : "#";
+  return res;
+}
+function glString(res){
+  if(res.glIdx<0) return "#";
+  let s=GLEASON[res.glIdx].s;
+  if(state.g4.trim()) s=s.replace("G4=#%","G4="+state.g4.trim()+"%");
+  return s;
+}
+function conclusionText(res){
+  const A=res.tot.A;
+  return [
+    `Biopsies prostatiques (cartographie) : ${tpl().titre}`,
+    `Score de Gleason le plus péjoratif : ${glString(res)}.`,
+    `Il se situe au niveau ${res.sites} et occupe ${fmt(A.adk)} mm des ${fmt(A.taille)} mm examinés sur les biopsies (${fmt(A.att)} des ${fmt(A.nbr)} biopsies).`,
+    `Engainements péri-nerveux : ${res.epn?"oui":"non"}.`,
+    `Extension extra-prostatique : ${res.ext}`,
+    `#{8brhp}`,
+  ].join("\n");
+}
+function conclusionHTML(text){
+  const lines=String(text??"").split(/\r?\n/);
+  return `<div>${lines.map((line,i)=>{
+    const safe=esc(line);
+    return i===0 ? safe.replace(/^Biopsies prostatiques \(cartographie\)/, '<u>Biopsies prostatiques (cartographie)</u>') : safe;
+  }).map(line=>`<div>${line||"&nbsp;"}</div>`).join("")}</div>`;
+}
+function conclusionPlain(){ return $("#concl").innerText.replace(/\u00a0/g," ").replace(/\n+$/," ").trimEnd(); }
+
+/* =====================================================================
+   Tableau de sortie (HTML collable dans Word + TSV)
+   ===================================================================== */
+const HEAD = ["N°","Site","Nbr","Taille (mm)","Nbre de biopsies atteintes","Taille ADK (mm)","Score de Gleason","Engainements périnerveux","Extension extra prostatique","Commentaires"];
+function tableModel(res){
+  const out=[]; // {type:'sec'|'row'|'tot', cells:[]}
+  let pot=0;
+  for(const s of sideOrder()){
+    const rows = state.rows[s].filter(r=> r.l || rowHasData(r));
+    if(!rows.length) continue;
+    out.push({type:"sec", text:SIDES[s]});
+    for(const r of rows){
+      const gi=parseGl(r.gl);
+      let g = gi>=0 ? GLEASON[gi].s.replace(/\s+/g," ") : "";
+      if(gi>=0 && state.g4.trim()) g=g.replace("G4=#%","G4="+state.g4.trim()+"%");
+      out.push({type:"row", cells:[++pot, r.l, r.n===""?"":fmt(n0(r.n)), r.taille===""?"":fmt(n0(r.taille)), r.att===""?"":fmt(n0(r.att)), r.adk===""?"":fmt(n0(r.adk)), g, r.epn?"oui":"non", r.ext, r.comm]});
+    }
+    const T=res.tot[s];
+    out.push({type:"tot", cells:["","TOTAL",fmt(T.nbr),fmt(T.taille),fmt(T.att),fmt(T.adk),"","","",""]});
+  }
+  return out;
+}
+const TD="border:1px solid #777;padding:2px 5px;font:10pt Calibri,Arial,sans-serif;text-align:center;";
+function tableHTML(res){
+  let h=`<table border="1" cellspacing="0" cellpadding="3" style="border-collapse:collapse;border:1px solid #777"><tr>`+HEAD.map(x=>`<th style="${TD}background:#e6e6e6;font-weight:bold">${esc(x)}</th>`).join("")+`</tr>`;
+  for(const r of tableModel(res)){
+    if(r.type==="sec") h+=`<tr><td colspan="10" style="${TD}text-align:left;font-weight:bold;background:#f2f2f2">${esc(r.text)}</td></tr>`;
+    else h+=`<tr>`+r.cells.map((c,i)=>`<td style="${TD}${r.type==="tot"?"font-weight:bold;":""}${i===1||i===9?"text-align:left;":""}">${esc(c)}</td>`).join("")+`</tr>`;
+  }
+  h+=`<tr><td colspan="10" style="${TD}text-align:left;font-style:italic">${esc(MORPHO)}</td></tr></table>`;
+  return h;
+}
+function tableTSV(res){
+  const L=[HEAD.join("\t")];
+  for(const r of tableModel(res)) L.push(r.type==="sec" ? r.text : r.cells.join("\t"));
+  L.push(MORPHO);
+  return L.join("\n");
+}
+function previewHTML(res){
+  let h=`<table><tr>`+HEAD.map(x=>`<th>${esc(x)}</th>`).join("")+`</tr>`;
+  const m=tableModel(res);
+  if(!m.length) return `<div class="small" style="padding:14px">Aucune ligne à afficher.</div>`;
+  for(const r of m){
+    if(r.type==="sec") h+=`<tr class="sec"><td colspan="10">${esc(r.text)}</td></tr>`;
+    else h+=`<tr class="${r.type==="tot"?"tt":""}">`+r.cells.map((c,i)=>`<td class="${i===1||i===9?"l":""}">${esc(c)}</td>`).join("")+`</tr>`;
+  }
+  return h+`<tr><td colspan="10" class="note">${esc(MORPHO)}</td></tr></table>`;
+}
+
+/* =====================================================================
+   Presse-papiers
+   ===================================================================== */
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),1800); }
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); return true; }catch(e){}
+  const ta=document.createElement("textarea"); ta.value=text; ta.style.cssText="position:fixed;left:-9999px;top:0";
+  document.body.appendChild(ta); ta.select(); let ok=false; try{ ok=document.execCommand("copy"); }catch(e){} ta.remove(); return ok;
+}
+async function copyRich(html,text){
+  try{
+    if(navigator.clipboard && window.ClipboardItem){
+      await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]);
+      return true;
+    }
+  }catch(e){}
+  const d=document.createElement("div"); d.contentEditable="true"; d.style.cssText="position:fixed;left:-9999px;top:0;background:#fff"; d.innerHTML=html;
+  document.body.appendChild(d); const sel=getSelection(), rg=document.createRange(); rg.selectNodeContents(d); sel.removeAllRanges(); sel.addRange(rg);
+  let ok=false; try{ ok=document.execCommand("copy"); }catch(e){} sel.removeAllRanges(); d.remove(); return ok;
+}
+let LAST=null;
+async function doCopy(kind){
+  const res=LAST||compute(); const concl=conclusionPlain(); const conclHtml=conclusionHTML(concl);
+  let ok;
+  if(kind==="con") ok=await copyRich(conclHtml,concl);
+  else if(kind==="tab") ok=await copyRich(tableHTML(res),tableTSV(res));
+  else ok=await copyRich(tableHTML(res)+conclHtml, tableTSV(res)+"\n\n"+concl);
+  toast(ok ? (kind==="con"?"Conclusion copiée ✔":kind==="tab"?"Tableau copié ✔":"Tableau + conclusion copiés ✔") : "Copie impossible : sélectionnez le texte manuellement");
+}
+
+/* =====================================================================
+   Rendu de la grille de saisie
+   ===================================================================== */
+const COLS=["l","n","taille","att","adk","gl","epn","ext","comm"];
+function renderSide(s){
+  const card=$(`section[data-side="${s}"]`);
+  const addLabel = s==="C" ? "+ cible" : "+ site";
+  card.innerHTML = `<header>${SIDES[s]}<span class="sp"></span><button class="mini" data-add="${s}">${addLabel}</button></header>
+  <table class="grid"><colgroup><col style="width:34px"><col style="width:19%"><col style="width:52px"><col style="width:66px"><col style="width:70px"><col style="width:70px"><col style="width:92px"><col style="width:58px"><col style="width:102px"><col><col style="width:28px"></colgroup>
+  <thead><tr><th>N°</th><th>Site de prélèvement</th><th>Nbr</th><th>Taille<br>(mm)</th><th>Biopsies<br>atteintes</th><th>Taille<br>ADK (mm)</th><th>Score de<br>Gleason</th><th>EPN</th><th>Extension<br>extra-prost.</th><th>Commentaires</th><th></th></tr></thead>
+  <tbody></tbody><tfoot><tr class="tot"><td colspan="2">TOTAL</td><td data-t="nbr"></td><td data-t="taille"></td><td data-t="att"></td><td data-t="adk"></td><td colspan="5"></td></tr></tfoot></table>`;
+  const tb=$("tbody",card);
+  state.rows[s].forEach((r,i)=>{
+    const tr=document.createElement("tr"); tr.className="row"; tr.dataset.i=i;
+    const inp=(f,cls="",ph="",mode="")=>`<input data-s="${s}" data-i="${i}" data-f="${f}" class="${cls}" value="${esc(r[f])}" placeholder="${ph}" ${mode?`inputmode="${mode}"`:""} autocomplete="off">`;
+    tr.innerHTML=`<td class="pot"></td>
+      <td>${inp("l","lab", s==="C"?"ex. cible 1 – apex D":"")}</td>
+      <td class="c">${inp("n","c","", "numeric")}</td>
+      <td class="c">${inp("taille","c","", "decimal")}</td>
+      <td class="c">${inp("att","c","", "numeric")}</td>
+      <td class="c">${inp("adk","c","", "decimal")}</td>
+      <td class="gl c">${inp("gl","c","ex. 34")}</td>
+      <td><button class="epn" data-s="${s}" data-i="${i}" data-f="epn" type="button">non</button></td>
+      <td><select data-s="${s}" data-i="${i}" data-f="ext"><option value=""></option><option value="oui">oui</option><option value="non">non</option></select></td>
+      <td>${inp("comm")}</td>
+      <td><button class="del" data-del="${s}:${i}" title="Retirer cette ligne" type="button">×</button></td>`;
+    tb.appendChild(tr);
+    $(`select[data-f="ext"]`,tr).value=r.ext;
+  });
+}
+function renderAll(){ for(const s of ["D","G","C"]) renderSide(s); update(); }
+
+/* ---------- mise à jour (sans reconstruire les champs → le focus est conservé) */
+function applySideOrder(){
+  const want=sideOrder(), cards=want.map(sd=>$(`section[data-side="${sd}"]`)), par=cards[0].parentNode;
+  const cur=[...par.querySelectorAll(':scope > section[data-side]')];
+  if(cur.length===3 && cur.every((c,i)=>c===cards[i])) return;
+  const anchor=cur[cur.length-1].nextSibling;
+  cards.forEach(c=>par.insertBefore(c,anchor));
+}
+function update(){
+  const res=compute(); LAST=res; applySideOrder();
+  for(const s of ["D","G","C"]){
+    const card=$(`section[data-side="${s}"]`);
+    $$("tbody tr",card).forEach((tr,i)=>{
+      const r=state.rows[s][i], info=res.rowInfo[s][i]||{};
+      $(".pot",tr).textContent=res.pot[s][i];
+      for(const f of ["n","taille","att","adk","gl"]){
+        const el=$(`[data-f="${f}"]`,tr); el.classList.toggle("bad",info[f]==="bad"); el.classList.toggle("warn",info[f]==="warn");
+      }
+      const gi=parseGl(r.gl), gel=$('[data-f="gl"]',tr);
+      gel.className=gel.className.replace(/\bisup\d\b/g,"").trim();
+      if(gi>=0){ gel.classList.add("isup"+GLEASON[gi].isup); gel.title=GLEASON[gi].s.replace(/\s+/g," ").replace(" G4=#%",""); } else gel.title="";
+      const e=$(".epn",tr); e.classList.toggle("on",r.epn); e.textContent=r.epn?"oui":"non";
+      const sel=$(`select`,tr); sel.classList.toggle("ext-envahi",r.ext==="oui");
+    });
+    const T=res.tot[s];
+    for(const k of ["nbr","taille","att","adk"]) $(`[data-t="${k}"]`,card).textContent=fmt(T[k]);
+  }
+  const A=res.tot.A, gi=res.glIdx;
+  const vG=$("#vG");
+  if(gi<0) vG.textContent="–";
+  else{
+    const g=GLEASON[gi];
+    vG.innerHTML=`<span class="chip isup${g.isup}" style="font-size:14px;padding:2px 10px">${g.s.replace(/\s+/g," ").replace(/ G4=#%/,"")}</span>`;
+    if(g.s.includes("G4=#%")) vG.innerHTML+=`<span class="g4">G4 <input id="g4" value="${esc(state.g4)}" inputmode="numeric" placeholder="%" maxlength="3">%</span>`;
+  }
+  $("#vT").textContent = A.taille>0 ? `${Math.round(A.adk/A.taille*100)} %  (${fmt(A.adk)} / ${fmt(A.taille)} mm)` : "–";
+  $("#vP").textContent = `${fmt(A.att)} / ${fmt(A.nbr)}`;
+  $("#vS").textContent = res.sites==="#" ? "–" : res.sites;
+  $("#vE").textContent = res.epn ? "oui" : "non";
+  $("#vX").textContent = res.ext==="#" ? "–" : res.ext;
+  $("#vE").style.color = res.epn ? "var(--warn)" : ""; $("#vX").style.color = res.ext==="oui" ? "var(--err)" : "";
+  const al=$("#alerts");
+  if(res.issues.length){
+    al.classList.add("show");
+    al.innerHTML=`<b>⚠ ${res.issues.length} ligne(s) à vérifier</b><ul>`+res.issues.map(x=>`<li><b>${esc(x.label)}</b> (${x.side==="D"?"droite":x.side==="G"?"gauche":"ciblée"}) : ${esc(x.msgs.join(" ; "))}</li>`).join("")+`</ul>`;
+  } else { al.classList.remove("show"); al.innerHTML=""; }
+  if(!state.manual) $("#concl").innerHTML=conclusionHTML(conclusionText(res));
+  $("#manual").classList.toggle("show",state.manual);
+  $("#tprev").innerHTML=previewHTML(res);
+}
+
+/* =====================================================================
+   Événements de saisie
+   ===================================================================== */
+const entry=$("#entry");
+entry.addEventListener("input",e=>{
+  const el=e.target; if(!el.dataset.f) return;
+  const {s,i,f}=el.dataset; state.rows[s][+i][f]=el.value; update();
+});
+entry.addEventListener("change",e=>{
+  const el=e.target; if(el.dataset.f==="gl"){ const {s,i}=el.dataset; const n=glNorm(el.value); el.value=n; state.rows[s][+i].gl=n; update(); }
+});
+entry.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.f==="epn"){ const r=state.rows[b.dataset.s][+b.dataset.i]; r.epn=!r.epn; update(); return; }
+  if(b.dataset.add){ const s=b.dataset.add; const last=state.rows[s][state.rows[s].length-1]; if(state.rows[s].length>=14) return;
+    state.rows[s].push(blankRow("", s==="C"?"":(last?last.n:"2"))); renderSide(s); update(); const n=state.rows[s].length-1; $(`[data-s="${s}"][data-i="${n}"][data-f="l"]`).focus(); return; }
+  if(b.dataset.del){ const [s,i]=b.dataset.del.split(":"); state.rows[s].splice(+i,1); if(s==="C"&&!state.rows.C.length) state.rows.C.push(blankRow()); renderSide(s); update(); }
+});
+document.addEventListener("focusin",e=>{
+  const t=e.target; if(!(t.matches&&t.matches("#entry input"))) return;
+  const v=t.value; t.select();                       /* sélection immédiate (focus programmatique : turbo, dictée) */
+  setTimeout(()=>{ if(document.activeElement===t && t.value===v) t.select(); },0);   /* et après un clic souris */
+});
+/* G4 % (affiché seulement si le pire score est 7) */
+$(".kpis").addEventListener("input",e=>{ if(e.target.id==="g4"){ state.g4=e.target.value.replace(/[^\d,.]/g,""); const res=compute(); LAST=res; if(!state.manual) $("#concl").innerHTML=conclusionHTML(conclusionText(res)); $("#tprev").innerHTML=previewHTML(res);} });
+/* Navigation clavier et mode TURBO intelligent */
+let turboEnabled=false, turboTimer=null;
+const turboFields=new Set(["n","taille","att","adk","gl"]);
+const turboToggle=$("#turboToggle");
+let suppressTurbo=false;   // vrai pendant une saisie vocale (la dictée gère elle-même l'avance)
+function setTurbo(on){
+  turboEnabled=!!on;
+  turboToggle.setAttribute("aria-pressed",String(turboEnabled));
+  turboToggle.textContent=turboEnabled?"TURBO intelligent : activé":"TURBO intelligent : désactivé";
+  if(!turboEnabled&&turboTimer){ clearTimeout(turboTimer); turboTimer=null; }
+}
+turboToggle.addEventListener("click",()=>setTurbo(!turboEnabled));
+/* Dictée : l'ordre des lignes suit les NUMÉROS DE BLOC des libellés (ex. Maire : 1-6 à gauche puis 7-12 à droite),
+   pas la position à l'écran. Sans numéros (Apex/Milieu/Base…) ou avec D1/G1 : ordre de l'écran. */
+var voiceMode=false;
+const lblOf=r=>(r.querySelector('[data-f="l"]')||{}).value||"";
+function blockNums(r){ return [...lblOf(r).matchAll(/\d+/g)].map(m=>+m[0]); }
+function sortBlocks(rows){
+  const side=r=>r.closest("section[data-side]")?.dataset.side;
+  const dg=rows.filter(r=>side(r)!=="C");
+  const pure=dg.length&&dg.every(r=>blockNums(r).length && !/[DG]\s*\d/i.test(lblOf(r)));
+  if(!pure) return rows;
+  const key=r=>side(r)==="C"?1e9:Math.min(...blockNums(r));
+  return rows.map((r,i)=>[r,i]).sort((a,b)=>key(a[0])-key(b[0])||a[1]-b[1]).map(x=>x[0]);
+}
+function findBlock(n,cur){
+  const rows=$$("#entry tr.row"), hits=rows.filter(r=>blockNums(r).includes(n));
+  if(hits.length===1) return hits[0];
+  if(hits.length>1){ const sd=cur&&cur.closest("section[data-side]")?.dataset.side; return hits.find(r=>r.closest("section[data-side]")?.dataset.side===sd)||hits[0]; }
+  return rows.find(r=>{ const p=r.querySelector("td.pot"); return p&&p.textContent.trim()===String(n); })||null;
+}
+function turboRows(){
+  const base=$$("#entry tr.row").filter(row=>{
+    const s=row.closest("section[data-side]")?.dataset.side;
+    if(s!=="C") return true;
+    const i=Number(row.dataset.i), r=state.rows.C[i];
+    return !!(r && [r.l,r.n,r.taille,r.att,r.adk,r.gl,r.comm].some(v=>String(v??"").trim()));
+  });
+  return voiceMode ? sortBlocks(base) : base;
+}
+function fieldInRow(row,f){ return row?.querySelector(`[data-f="${f}"]`)||null; }
+function firstField(rows,f){ for(const row of rows){ const el=fieldInRow(row,f); if(el) return el; } return null; }
+function nextPhaseOne(el){
+  const rows=turboRows(), row=el.closest("tr.row"), f=el.dataset.f, idx=rows.indexOf(row);
+  if(idx<0) return null;
+  // Nbr : descendre toute la colonne, puis Taille.
+  // Taille : descendre toute la colonne, puis ouvrir la phase Biopsies atteintes.
+  if(f==="n") return firstField(rows.slice(idx+1),"n") || firstField(rows,"taille");
+  if(f==="taille") return firstField(rows.slice(idx+1),"taille") || firstField(rows,"att");
+  return null;
+}
+function tumorRowsAfter(row){
+  const all=$$("#entry tr.row"), rows=voiceMode?sortBlocks(all):all, idx=rows.indexOf(row);
+  return rows.slice(idx+1).filter(r=>{
+    const side=r.closest("section[data-side]")?.dataset.side;
+    const i=Number(r.dataset.i), data=state.rows[side]?.[i];
+    // Les lignes D/G sont des prélèvements prévus : on peut y saisir la prochaine atteinte.
+    // Une ligne ciblée vierge reste ignorée.
+    return !!data && (side!=="C" || [data.l,data.n,data.taille,data.att,data.adk,data.gl,data.comm].some(v=>String(v??"").trim()));
+  });
+}
+function nextPhaseTwo(el){
+  const row=el.closest("tr.row"), f=el.dataset.f;
+  if(f==="att") return fieldInRow(row,"adk");
+  if(f==="adk") return fieldInRow(row,"gl");
+  if(f==="gl") return firstField(tumorRowsAfter(row),"att");
+  return null;
+}
+function nextTurboField(el){
+  if(el.dataset.f==="n"||el.dataset.f==="taille") return nextPhaseOne(el);
+  if(el.dataset.f==="att"||el.dataset.f==="adk"||el.dataset.f==="gl") return nextPhaseTwo(el);
+  return null;
+}
+/* Le champ est "prêt" quand la valeur est complète :
+   - Taille / Taille ADK : un chiffre après la virgule (12,5)
+   - Nbr / Biopsies atteintes : un chiffre
+   - Gleason : score reconnu (33, 3+4…)                                  */
+function turboReady(el){
+  const f=el.dataset.f, v=(el.value||"").trim();
+  if(!v) return false;
+  if(f==="taille"||f==="adk") return /^\d+[.,]\d$/.test(v);
+  if(f==="n"||f==="att") return /^\d$/.test(v);
+  if(f==="gl") return parseGl(v)>=0;
+  return false;
+}
+function turboCheck(el){
+  if(!turboEnabled||suppressTurbo||!turboFields.has(el.dataset.f)) return;
+  if(!turboReady(el)) return;
+  const next=nextTurboField(el); if(next) next.focus();
+}
+entry.addEventListener("input",e=>{ const el=e.target; if(el.matches('input[data-f]')) turboCheck(el); });
+function moveVertical(el,delta){
+  const {s,i,f}=el.dataset; let j=+i+delta;
+  let target=$( `[data-s="${s}"][data-i="${j}"][data-f="${f}"]` );
+  if(!target){
+    const order=sideOrder(), si=order.indexOf(s)+delta, ns=order[si];
+    if(ns){ const jj=delta>0?0:state.rows[ns].length-1; target=$( `[data-s="${ns}"][data-i="${jj}"][data-f="${f}"]` ); }
+  }
+  if(target) target.focus();
+}
+entry.addEventListener("keydown",e=>{
+  const el=e.target; if(!el.dataset||!el.dataset.f) return;
+  if(e.key==="Enter"){
+    e.preventDefault();
+    const list=$$("#entry input[data-f], #entry select[data-f], #entry button.epn");
+    const k=list.indexOf(el), nx=list[k+(e.shiftKey?-1:1)]; if(nx) nx.focus();
+  } else if(["ArrowDown","ArrowUp"].includes(e.key)){
+    e.preventDefault(); moveVertical(el,e.key==="ArrowDown"?1:-1);
+  } else if(["ArrowLeft","ArrowRight"].includes(e.key)){
+    e.preventDefault();
+    const row=el.closest("tr.row");
+    if(row){
+      const cells=$$("input[data-f], select[data-f], button.epn",row);
+      const k=cells.indexOf(el), nx=cells[k+(e.key==="ArrowRight"?1:-1)];
+      if(nx) nx.focus();
+    }
+  } else if(el.dataset.f==="epn"&&(e.key===" "||e.key==="Enter")){ e.preventDefault(); el.click(); }
+});
+
+/* Conclusion modifiable */
+$("#concl").addEventListener("input",()=>{ state.manual=true; $("#manual").classList.add("show"); });
+$("#regen").addEventListener("click",e=>{ e.preventDefault(); state.manual=false; update(); });
+$("#cCon").onclick=()=>doCopy("con"); $("#cTab").onclick=()=>doCopy("tab"); $("#cAll").onclick=()=>doCopy("all");
+document.addEventListener("keydown",e=>{
+  if(!e.altKey) return;
+  if(e.key==="1"){ e.preventDefault(); doCopy("con"); }
+  else if(e.key==="2"){ e.preventDefault(); doCopy("tab"); }
+  else if(e.key==="3"){ e.preventDefault(); doCopy("all"); }
+  else if(e.key.toLowerCase()==="n"){ e.preventDefault(); newCase(); }
+});
+window.addEventListener("beforeunload",e=>{ if(isDirty()){ e.preventDefault(); e.returnValue=""; } });
+
+/* Modèle / nouveau dossier */
+function fillModelSelect(){
+  const sel=$("#model"); sel.innerHTML=TPL.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
+  sel.value=state.modelId;
+}
+$("#model").addEventListener("change",e=>{
+  if(isDirty() && !confirm("Changer de modèle efface la saisie en cours. Continuer ?")){ e.target.value=state.modelId; return; }
+  state.modelId=e.target.value; store.set("pbx.last",state.modelId); buildRows(); renderAll();
+});
+function newCase(){
+  if(isDirty() && !confirm("Effacer la saisie en cours et commencer un nouveau dossier ?")) return;
+  buildRows(); renderAll(); const f=$(`[data-s="D"][data-i="0"][data-f="taille"]`); if(f) f.focus(); toast("Nouveau dossier");
+}
+$("#bNew").onclick=newCase;
+
+/* =====================================================================
+   Éditeur de modèles
+   ===================================================================== */
+const dlg=$("#dlg"); let draft=null, sel=0;
+function openModels(){ draft=JSON.parse(JSON.stringify(TPL)); sel=Math.max(0,draft.findIndex(t=>t.id===state.modelId)); drawEditor(); dlg.showModal(); }
+function drawEditor(){
+  $("#dList").innerHTML=draft.map((t,i)=>`<div class="it ${i===sel?"sel":""}" data-sel="${i}">${esc(t.name||"(sans nom)")}</div>`).join("");
+  const t=draft[sel]; if(!t){ $("#dForm").innerHTML=""; return; }
+  const sideForm=(k,title)=>`<div><span class="fl">${title}</span>${t[k].map((s,i)=>`<div class="sl"><input type="text" value="${esc(s.l)}" data-k="${k}" data-i="${i}" data-p="l" placeholder="site"><input type="number" min="0" value="${esc(s.n)}" data-k="${k}" data-i="${i}" data-p="n" title="Nbr de carottes"><button class="del" style="opacity:.8" data-rm="${k}:${i}" type="button">×</button></div>`).join("")}
+    <button class="pbtn ghost" data-addsite="${k}" type="button" style="padding:5px 10px;font-size:12px">+ site</button></div>`;
+  $("#dForm").innerHTML=`<span class="fl">Nom du modèle (ex. urologue · schéma)</span><input type="text" id="fName" value="${esc(t.name)}">
+    <span class="fl">Intitulé de la conclusion</span><input type="text" id="fTitre" value="${esc(t.titre)}">
+    <div class="actions" style="margin:6px 0 4px"><button class="pbtn ghost" data-titre="${esc(INF)}" type="button" style="padding:4px 9px;font-size:12px">… INFILTRANT</button><button class="pbtn ghost" data-titre="${esc(SIMPLE)}" type="button" style="padding:4px 9px;font-size:12px">sans INFILTRANT</button></div>
+    <div class="two">${sideForm("right","Sites du côté droit  ·  nom + nbr de carottes")}${sideForm("left","Sites du côté gauche  ·  nom + nbr de carottes")}</div>
+    <div class="actions" style="margin-top:10px"><button class="pbtn ghost" data-mirror="1" type="button">Copier droite → gauche (inversé)</button></div>
+    <p class="small">Les biopsies ciblées sont toujours disponibles (bouton « + cible » sur la page de saisie).</p>`;
+}
+$("#dList").addEventListener("click",e=>{ const it=e.target.closest("[data-sel]"); if(it){ sel=+it.dataset.sel; drawEditor(); } });
+$("#dForm").addEventListener("input",e=>{
+  const t=draft[sel], el=e.target;
+  if(el.id==="fName"){ t.name=el.value; $$(".dl .it")[sel].textContent=el.value||"(sans nom)"; }
+  else if(el.id==="fTitre") t.titre=el.value;
+  else if(el.dataset.k){ const s=t[el.dataset.k][+el.dataset.i]; if(el.dataset.p==="l") s.l=el.value; else s.n=Math.max(0,parseInt(el.value||"0",10)||0); }
+});
+$("#dForm").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return; const t=draft[sel];
+  if(b.dataset.titre){ t.titre=b.dataset.titre; drawEditor(); }
+  else if(b.dataset.addsite){ const a=t[b.dataset.addsite]; if(a.length<14){ a.push({l:"",n:a.length?a[a.length-1].n:2}); drawEditor(); } }
+  else if(b.dataset.rm){ const [k,i]=b.dataset.rm.split(":"); t[k].splice(+i,1); drawEditor(); }
+  else if(b.dataset.mirror){ t.left=JSON.parse(JSON.stringify(t.right)).reverse(); drawEditor(); }
+});
+$("#dAdd").onclick=()=>{ draft.push({id:"t"+Date.now(),name:"Nouveau modèle",titre:INF,right:sites(["Apex","Milieu","Base"],2),left:sites(["Base","Milieu","Apex"],2)}); sel=draft.length-1; drawEditor(); };
+$("#dDup").onclick=()=>{ const c=JSON.parse(JSON.stringify(draft[sel])); c.id="t"+Date.now(); c.name+=" (copie)"; draft.splice(sel+1,0,c); sel++; drawEditor(); };
+$("#dDel").onclick=()=>{ if(draft.length<2){ alert("Il faut garder au moins un modèle."); return; } if(confirm(`Supprimer « ${draft[sel].name} » ?`)){ draft.splice(sel,1); sel=Math.max(0,sel-1); drawEditor(); } };
+$("#dRst").onclick=()=>{ if(confirm("Remplacer tous les modèles par les modèles d'origine ?")){ draft=JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)); sel=0; drawEditor(); } };
+$("#dExp").onclick=()=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(draft,null,1)],{type:"application/json"})); a.download="modeles_biopsies_prostate.json"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); };
+$("#dImp").onclick=()=>$("#dFile").click();
+$("#dFile").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return; const rd=new FileReader();
+  rd.onload=()=>{ try{ const j=JSON.parse(rd.result); if(!Array.isArray(j)||!j.every(t=>t&&t.name&&Array.isArray(t.right)&&Array.isArray(t.left))) throw 0;
+      j.forEach(t=>{ t.id=t.id||("t"+Math.random().toString(36).slice(2)); t.titre=t.titre||INF; if(draft.some(d=>d.id===t.id)) t.id+="_"+Date.now(); draft.push(t); }); sel=draft.length-1; drawEditor(); toast("Modèles importés (pensez à Enregistrer)"); }
+    catch(x){ alert("Fichier de modèles non valide."); } e.target.value=""; };
+  rd.readAsText(f);
+};
+$("#dSave").onclick=()=>{
+  for(const t of draft){ t.name=(t.name||"").trim()||"Sans nom"; t.right=t.right.filter(s=>s.l.trim()).map(s=>({l:s.l.trim(),n:s.n})); t.left=t.left.filter(s=>s.l.trim()).map(s=>({l:s.l.trim(),n:s.n})); }
+  TPL=draft; const ok=saveTpl();
+  if(!TPL.some(t=>t.id===state.modelId)){ state.modelId=TPL[0].id; if(!isDirty()){ buildRows(); } }
+  fillModelSelect(); if(!isDirty()){ buildRows(); renderAll(); }
+  dlg.close(); toast(ok?"Modèles enregistrés ✔":"Modèles appliqués (stockage local indisponible : pensez à Exporter)");
+};
+$("#dClose").onclick=()=>dlg.close();
+$("#bModels").onclick=openModels;
+
+/* =====================================================================
+   Dictée vocale (reconnaissance vocale du navigateur, français)
+   ===================================================================== */
+const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+const V_UNITS={zero:0,un:1,une:1,deux:2,trois:3,quatre:4,cinq:5,six:6,sept:7,huit:8,neuf:9,dix:10,onze:11,douze:12,treize:13,quatorze:14,quinze:15,seize:16};
+const V_TENS={vingt:20,vingts:20,trente:30,quarante:40,cinquante:50,soixante:60};
+const V_KEYS={nombre:"n",nbr:"n",taille:"taille",longueur:"taille",atteinte:"att",atteintes:"att",atteint:"att",atteints:"att",positive:"att",positives:"att",
+   adk:"adk",dk:"adk",adca:"adk",tumeur:"adk",tumeurs:"adk",foyer:"adk",adenocarcinome:"adk",denocarcinome:"adk",carcinome:"adk",cancer:"adk",cancers:"adk",gleason:"gl",score:"gl",commentaire:"comm",commentaires:"comm",note:"comm"};
+const V_SIDES={droit:"D",droite:"D",gauche:"G",cible:"C",cibles:"C",ciblee:"C",ciblees:"C"};
+const V_CMDS={suivant:"next",valider:"next",ok:"next",passer:"next",suivante:"nextrow",prochain:"nextrow",prochaine:"nextrow",precedent:"prev",precedente:"prev",retour:"prev",
+   effacer:"clear",supprimer:"clear",stop:"stop",arret:"stop",arreter:"stop",annuler:"undo",annule:"undo",defaire:"undo",tailles:"sizes",
+   negatif:"neg",negative:"neg",negatifs:"neg",negatives:"neg",vide:"neg",sain:"neg",saine:"neg"};
+const W=a=>new Set(a.split(" "));
+const ROWW=W("ligne bloc pot numero en"), BIOW=W("biopsie biopsies carotte carottes prelevement prelevements cylindre cylindres"),
+  ATTW=W("atteinte atteintes atteint atteints positive positives"), TUM=W("tumeur tumeurs tumorale tumoral foyer adk dk adca adenocarcinome denocarcinome carcinome cancer cancers"),
+  FILL=W("de du des la le les l d est sont il y a au aux un une"), NEXTW=W("suivant suivante prochain prochaine"),
+  NEGW=W("pas sans absence absent absente aucun aucune"),
+  VALW=W("oui non envahi envahie envahis envahies present presente presents absent absente absents indemne indemnes negatif negative negatifs negatives infiltre infiltree"),
+  NEGV=W("non absent absente absents indemne indemnes negatif negative negatifs negatives"),
+  EPNT=W("engainement engainements epn pn perinerveux perinerveuse perinerveuses"),
+  EPNG=W("engainement engainements epn perinerveux perinerveuse perinerveuses peri nerveux nerveuse nerveuses de d du"),
+  EXTT=W("extension extraprostatique extra adipeux adipeuse graisse graisseux graisseuse"),
+  EXTG=W("extension extraprostatique extra prostatique adipeux adipeuse graisse graisseux graisseuse tissu tissue tissus de d du la le");
+const isNumW=w=>has(V_UNITS,w)||has(V_TENS,w)||w==="cent"||w==="cents";
+const isDig=w=>/^\d+(?:[.,]\d+)?$/.test(w);
+
+function vNumRun(T,i){
+  let cur=0,j=i,prev="";
+  while(j<T.length){
+    const w=T[j];
+    if(w==="et" && cur>0 && ["un","une","onze"].includes(T[j+1])){ j++; continue; }
+    if(w==="cent"||w==="cents"){ if(cur>=100) break; cur=(cur===0?1:cur)*100; }
+    else if(has(V_TENS,w)){
+      if((w==="vingt"||w==="vingts") && prev==="quatre" && cur===4) cur=80;
+      else if(cur===0||cur%100===0) cur+=V_TENS[w];
+      else break;
+    }
+    else if(has(V_UNITS,w)){
+      const v=V_UNITS[w];
+      if(v===0){ if(j===i){ j++; prev=w; } break; }
+      if(v<=9){ if(!(cur===0||cur%10===0)) break; cur+=v; }
+      else { if(!(cur===0||cur%100===0||cur===60||cur===80)) break; cur+=v; }
+    } else break;
+    prev=w; j++;
+  }
+  return {value:cur,next:j};
+}
+function vMerge(ops){
+  const out=[], sd=o=>o&&o.t==="num"&&/^[3-5]$/.test(o.v);
+  for(let k=0;k<ops.length;k++){
+    const a=ops[k], b=ops[k+1], c=ops[k+2];
+    if(sd(a)&&b&&b.t==="plus"&&sd(c)){ out.push({t:"gl",v:a.v+"+"+c.v}); k+=2; continue; }
+    if(a.t==="key"&&a.v==="gl"){
+      out.push(a);
+      if(sd(b)&&sd(c)){ out.push({t:"gl",v:b.v+"+"+c.v}); k+=2; }
+      else if(b&&b.t==="num"&&/^[3-5]{2}$/.test(b.v)){ out.push({t:"gl",v:b.v[0]+"+"+b.v[1]}); k+=1; }
+      continue;
+    }
+    if(a.t==="plus") continue;
+    out.push(a);
+  }
+  return out;
+}
+const numAt=(T,k)=>{ if(k>=T.length) return null;
+  if(isDig(T[k])&&!/[.,]/.test(T[k])) return {n:parseInt(T[k],10),next:k+1};
+  if(isNumW(T[k])){ const r=vNumRun(T,k); return {n:r.value,next:r.next}; } return null; };
+function valLook(T,j){   /* « oui », « non », « envahie », « absent »… juste après un mot-clé */
+  let val=null,k=j,sk=0;
+  while(k<T.length){
+    if(VALW.has(T[k])){ val=NEGV.has(T[k])?"non":(val==="non"?"non":"oui"); k++; j=k; sk=0; continue; }
+    if(FILL.has(T[k])&&sk<2){ k++; sk++; continue; }
+    break;
+  }
+  return {val,next:j};
+}
+/* texte dicté -> liste d'actions */
+function vParse(text){
+  const raw=String(text||"").toLowerCase().replace(/\b(?:a\s*)?d\s*k\b/g,"adk").replace(/\be\s+p\s+n\b/g,"epn");
+  const R=raw.match(/[.,]\d+|\d+(?:[.,]\d+)?|[a-zà-ÿ]+|\+/g)||[];
+  const T=R.map(x=>x.normalize("NFD").replace(/[̀-ͯ]/g,""));
+  const ops=[]; let i=0, mark=0;
+  while(i<T.length){
+    const w=T[i];
+    /* fragment décimal sans partie entière (« ,3 » / « virgule trois ») : le 1er chiffre n'a pas été compris */
+    if(/^[.,]\d+$/.test(w)){ ops.push({t:"bad",v:w}); i++; mark=i; continue; }
+    if(w==="virgule"){ let j=i+1; const r=numAt(T,j); if(r) j=r.next; ops.push({t:"bad",v:"virgule"+(r?" "+r.n:"")}); i=j; mark=i; continue; }
+    /* « taille de » / « en de » : « deux » entendu « de » */
+    if((w==="de"||w==="d") && i>0){
+      const pv=T[i-1], nx=T[i+1], numNext=nx&&(isDig(nx)||isNumW(nx));
+      if(!numNext && !TUM.has(nx) && !FILL.has(nx)){
+        if(has(V_KEYS,pv)&&["n","taille","att","adk"].includes(V_KEYS[pv])){ ops.push({t:"num",v:"2"}); i++; mark=i; continue; }
+        if(ROWW.has(pv)){ ops.push({t:"row",v:2}); i++; mark=i; continue; }
+      }
+    }
+    /* nombres */
+    if(isDig(w)||isNumW(w)){
+      let ip,j;
+      if(isDig(w)){ ip=w.replace(".",","); j=i+1; } else { const r=vNumRun(T,i); ip=String(r.value); j=r.next; }
+      if(!ip.includes(",") && (T[j]==="virgule"||T[j]==="point") && j+1<T.length && (isDig(T[j+1])||isNumW(T[j+1]))){
+        j++; let dec="";   /* une seule décimale : « douze virgule cinq un » = 12,5 puis 1 */
+        if(isDig(T[j])&&!/[.,]/.test(T[j])){ dec=T[j][0]; j++; }
+        else if(has(V_UNITS,T[j])){ dec=String(V_UNITS[T[j]]%10); j++; }
+        else { dec=String(V_TENS[T[j]]/10); j++; }
+        ip+=","+dec;
+      }
+      if(!ip.includes(",") && T[j]==="virgule"){ ops.push({t:"bad",v:ip+" virgule ?"}); i=j+1; mark=i; continue; }
+      const prev=ops[ops.length-1], int=!ip.includes(",");
+      if(int && BIOW.has(T[j])){            /* « 3 biopsies » = nombre ; « 2 biopsies atteintes » = atteintes */
+        if(ATTW.has(T[j+1])){ ops.push({t:"key",v:"att"},{t:"num",v:ip}); j+=2; } else { ops.push({t:"nbr",v:ip}); j++; }
+        i=j; mark=i; continue;
+      }
+      if(int && ATTW.has(T[j]) && !(prev&&prev.t==="key")){ ops.push({t:"key",v:"att"},{t:"num",v:ip}); i=j+1; mark=i; continue; }   /* « 2 atteintes » */
+      ops.push({t:"num",v:ip}); i=j; mark=i; continue;
+    }
+    if(w==="plus"||w==="+"){ ops.push({t:"plus"}); i++; continue; }
+    if(w==="oui"||w==="non"){ ops.push({t:"yn",v:w}); i++; mark=i; continue; }
+    /* « en 2 », « ligne 2 », « bloc 2 » ; « gauche 2 » */
+    if(ROWW.has(w)){
+      const r=numAt(T,i+1);
+      if(r){ ops.push({t:"row",v:r.n}); i=r.next; mark=i; continue; }
+      if(w!=="en"&&NEXTW.has(T[i+1])){ ops.push({t:"cmd",v:"nextrow"}); i+=2; mark=i; continue; }
+    }
+    if(has(V_SIDES,w)){
+      let k=i+1; if(ROWW.has(T[k])&&T[k]!=="en") k++;
+      const r=numAt(T,k);
+      if(r){ ops.push({t:"row",v:r.n,side:V_SIDES[w]}); i=r.next; } else { ops.push({t:"side",v:V_SIDES[w]}); i++; }
+      mark=i; continue;
+    }
+    /* engainement péri-nerveux / extension extra-prostatique (tissu adipeux, graisse) */
+    const grp = (EPNT.has(w)||/^engain/.test(w)) ? "epn" : EXTT.has(w) ? "ext" : null;
+    if(grp){
+      let neg=false; for(let t=i-1;t>=Math.max(mark,i-3);t--) if(NEGW.has(T[t])) neg=true;
+      const inG=x=>grp==="epn"?(EPNG.has(x)||/^(peri|nerv|engain)/.test(x)||x==="pn"):EXTG.has(x); let j=i+1; while(j<T.length&&inG(T[j])) j++;
+      const lv=valLook(T,j);
+      ops.push({t:"set",k:grp,v:lv.val||(neg?"non":"oui")}); i=lv.next>j?lv.next:j; mark=i; continue;
+    }
+    if(w==="taille"){   /* « taille de la tumeur » = taille ADK */
+      let k=1; while(k<=3&&FILL.has(T[i+k])) k++;
+      if(TUM.has(T[i+k])){ ops.push({t:"key",v:"adk"}); i+=k+1; mark=i; continue; }
+    }
+    if(has(V_KEYS,w)){
+      if(V_KEYS[w]==="comm"){ const rest=R.slice(i+1).join(" "); ops.push({t:"key",v:"comm"}); if(rest) ops.push({t:"text",v:rest}); break; }
+      ops.push({t:"key",v:V_KEYS[w]}); i++; mark=i; continue;
+    }
+    if(has(V_CMDS,w)){ if(V_CMDS[w]==="neg") ops.push({t:"neg"}); else ops.push({t:"cmd",v:V_CMDS[w]}); i++; mark=i; continue; }
+    if(w==="copier"||w==="copie"){ const nx=T[i+1]; ops.push({t:"copy",v:(nx==="tableau")?"tab":"con"}); i+=(nx==="tableau"||nx==="conclusion"||nx==="compte")?2:1; mark=i; continue; }
+    i++;   // mot inconnu : ignoré
+  }
+  for(let k=0;k+1<ops.length;k++) if(ops[k].t==="nbr"&&ops[k+1].t==="row"){ const a=ops[k]; ops[k]=ops[k+1]; ops[k+1]=a; k++; }   // « 3 biopsies en 2 »
+  return vMerge(ops);
+}
+
+/* ---- application des actions sur le tableau */
+let lastField=null;
+document.addEventListener("focusin",e=>{ if(e.target.matches&&e.target.matches("#entry [data-f]")) lastField=e.target; });
+const dataFields=()=>$$("#entry input[data-f], #entry select[data-f], #entry button.epn");
+function vCur(){
+  const a=document.activeElement;
+  if(a&&a.matches&&a.matches("#entry [data-f]")) return a;
+  if(lastField&&lastField.isConnected){ lastField.focus(); return lastField; }
+  voiceMode=true; let f; try{ f=firstField(turboRows(),"taille"); } finally { voiceMode=false; } if(f) f.focus(); return f;
+}
+let curBatch=[]; const vUndo=[];
+let pinned=false, lastBool=null;   /* pinned : « en N » verrouille la ligne, les nombres ne passent plus à la ligne suivante */
+function vFill(el,val,rec=true){
+  suppressTurbo=true;
+  try{
+    const {s,i,f}=el.dataset;
+    if(f==="epn"){ if(rec) curBatch.push({el,old:state.rows[s][+i].epn?"oui":"non"}); state.rows[s][+i].epn=(val==="oui"); update(); }
+    else{ if(rec) curBatch.push({el,old:el.value}); el.value=val; el.dispatchEvent(new Event("input",{bubbles:true})); if(f==="gl") el.dispatchEvent(new Event("change",{bubbles:true})); }
+  } finally { suppressTurbo=false; }
+}
+function vNext(el){ const nx=nextTurboField(el); if(nx){ nx.focus(); return true; } return false; }
+const NUMF=["n","taille","att","adk","gl"];
+function vSetNum(t,v,log){
+  const f=t.dataset.f;
+  if(["n","taille","att","adk"].includes(f)){ vFill(t,v); log.push(v); return true; }
+  if(f==="gl"){ const raw=v.replace(/[.,]/g,""); if(parseGl(raw)>=0){ vFill(t,glNorm(raw)); log.push("Gleason "+glNorm(raw)); return true; } log.push("Gleason ? "+v); return false; }
+  log.push("nombre ignoré (champ actif non numérique)"); return false;
+}
+const rowField=(row,f)=>row&&row.querySelector(`[data-f="${f}"]`);
+/* La « ligne en cours » = ligne du champ actif. Gleason, EPN, extension, nombre de biopsies s'appliquent à cette ligne, dans n'importe quel ordre. */
+function vApply(ops){
+  const log=[]; curBatch=[]; voiceMode=true;
+  try{
+  for(const op of ops){
+    const el=vCur(); if(!el) break;
+    const {s,i,f}=el.dataset, row=el.closest("tr.row");
+    switch(op.t){
+      case "cmd":
+        if(op.v==="stop"){ micStop(); log.push("micro arrêté"); return log; }
+        if(op.v==="next"){ if(!vNext(el)){ const L=dataFields(), k=L.indexOf(el); if(L[k+1]) L[k+1].focus(); } log.push("suivant"); }
+        else if(op.v==="nextrow"){ const R=sortBlocks($$("#entry tr.row")), nx=R[R.indexOf(row)+1]; const t=nx&&(rowField(nx,NUMF.includes(f)?f:"att")); if(t){ t.focus(); pinned=true; log.push("ligne suivante"); } }
+        else if(op.v==="prev"){ const L=dataFields(), k=L.indexOf(el); if(L[k-1]) L[k-1].focus(); log.push("précédent"); }
+        else if(op.v==="sizes"){ const t=firstField(turboRows(),"taille"); if(t){ t.focus(); pinned=false; log.push("tailles : dictez-les à la suite"); } }
+        else if(op.v==="clear"){ vFill(el,f==="epn"?"non":""); log.push("effacé"); }
+        else if(op.v==="undo"){ const b=vUndo.pop(); if(b&&b.length){ for(const u of b.slice().reverse()) vFill(u.el,u.old,false); b[0].el.focus(); log.push("annulé"); } else log.push("rien à annuler"); }
+        break;
+      case "bad": log.push("⚠ mal compris « "+op.v+" » : répétez"); return log;
+      case "copy": { const b=$(op.v==="tab"?"#cTab":"#cCon"); if(b){ b.click(); log.push(op.v==="tab"?"tableau copié":"conclusion copiée"); } break; }
+      case "neg": {
+        if(!row) break;
+        ["att","adk","gl"].forEach(k=>{ const t=rowField(row,k); if(t&&t.value) vFill(t,""); });
+        log.push("ligne négative");
+        if(["att","adk","gl"].includes(f)){ const nx=firstField(tumorRowsAfter(row),"att"); if(nx) nx.focus(); }
+        break; }
+      case "side": { pinned=false; const t=$(`[data-s="${op.v}"][data-i="0"][data-f="taille"]`); if(t){ t.focus(); log.push("→ "+({D:"droit",G:"gauche",C:"ciblées"})[op.v]); } break; }
+      case "row": {
+        let tr=null;
+        if(op.side){ const t0=$(`[data-s="${op.side}"][data-i="${op.v-1}"][data-f="taille"]`); tr=t0&&t0.closest("tr.row"); }
+        else tr=findBlock(op.v,row);
+        const t=tr&&rowField(tr,NUMF.includes(f)?f:"att");
+        if(t){ t.focus(); pinned=true; log.push("ligne "+op.v); } else { log.push("⚠ bloc "+op.v+" introuvable : phrase ignorée"); return log; }
+        break; }
+      case "key": { const t=rowField(row,op.v); if(t){ t.focus(); log.push(op.v); } break; }
+      case "nbr": { const t=rowField(row,"n"); if(t){ vFill(t,op.v); log.push(op.v+" biopsie(s)"); } break; }
+      case "set": { const t=rowField(row,op.k); if(t){ vFill(t,op.v); lastBool={k:op.k,t:Date.now()}; log.push((op.k==="epn"?"engainement ":"extension ")+op.v); } break; }
+      case "yn": {
+        const k=(f==="epn"||f==="ext")?f:(lastBool&&Date.now()-lastBool.t<20000?lastBool.k:null), t=k&&rowField(row,k);
+        if(t){ vFill(t,op.v); log.push((k==="epn"?"engainement ":"extension ")+op.v); } else log.push("« "+op.v+" » ignoré");
+        break; }
+      case "gl": { const t=rowField(row,"gl"); if(t){ vFill(t,op.v); log.push("Gleason "+op.v); } break; }
+      case "num": {
+        if(!NUMF.includes(f)){ log.push("nombre ignoré (champ actif non numérique)"); break; }
+        if(vSetNum(el,op.v,log) && f!=="gl"){
+          const nx=nextTurboField(el);
+          if(nx && (nx.closest("tr.row")===row || !pinned)) nx.focus();
+        }
+        break; }
+      case "text":
+        if(f==="comm"||f==="l"){ vFill(el,(el.value?el.value+" ":"")+op.v); log.push("« "+op.v+" »"); }
+        break;
+    }
+  }
+  return log;
+  } finally { voiceMode=false; if(curBatch.length){ vUndo.push(curBatch); if(vUndo.length>30) vUndo.shift(); } curBatch=[]; }
+}
+
+/* ---- micro */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const mic={on:false,rec:null};
+const TITLE0=document.title.replace(/^(⚠|🎤) /,"");
+const bMic=$("#bMic"), vbar=$("#voiceBar"), vlive=$("#voiceLive"), vlast=$("#voiceLast");
+function micUI(){ bMic.classList.toggle("on",mic.on); vbar.hidden=!mic.on; }
+/* retour sonore : tick discret = compris ; deux notes graves = mal compris */
+let actx=null; const sndOn=()=>store.get("pbx.voice.snd")!=="0";
+function audioInit(){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==="suspended") actx.resume(); }catch(e){} }
+function beep(kind){
+  if(!sndOn()) return;
+  try{ audioInit(); if(!actx) return;
+    const seq=kind==="err"?[[240,0,.15],[170,.2,.25]]:[[900,0,.05]];
+    seq.forEach(([fr,at,d])=>{ const o=actx.createOscillator(), g=actx.createGain(); o.type=kind==="err"?"square":"sine"; o.frequency.value=fr; g.gain.value=kind==="err"?.07:.04;
+      o.connect(g); g.connect(actx.destination); o.start(actx.currentTime+at); o.stop(actx.currentTime+at+d); });
+  }catch(e){}
+}
+/* ---- journal des phrases non reconnues (local, exportable) */
+const VLOG_KEY="pbx.voicelog.v1";
+/* Journal centralisé (facultatif) : quand la page est servie en http(s) par un serveur interne qui accepte POST /log,
+   chaque phrase non reconnue ou signalée y est aussi envoyée. Mettre "" pour désactiver. Ouverte depuis un fichier : aucun envoi. */
+const APP_VERSION="2026-11-24", SERVER_LOG_URL="/log";
+let serverLogOff=false;
+const serverLogOn=()=>!!SERVER_LOG_URL && /^https?:$/.test(location.protocol) && !serverLogOff;
+function serverLog(e){
+  if(!serverLogOn()) return;
+  try{ fetch(SERVER_LOG_URL,{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,body:JSON.stringify(Object.assign({version:APP_VERSION},e))})
+    .then(r=>{ if(!r.ok) serverLogOff=true; }).catch(()=>{ serverLogOff=true; }); }catch(err){ serverLogOff=true; }
+}
+function vlogGet(){ try{ return JSON.parse(store.get(VLOG_KEY)||"[]"); }catch(e){ return []; } }
+function vlogAdd(e){ const L=vlogGet(), ent=Object.assign({ts:new Date().toISOString(),modele:state.modelId},e); L.push(ent); serverLog(ent); while(L.length>500) L.shift(); try{ store.set(VLOG_KEY,JSON.stringify(L)); }catch(err){} vlogCount(); }
+function vlogCount(){ const b=$("#voiceLogBtn"); if(b) b.textContent="📒 Journal ("+vlogGet().length+")"; }
+let lastEntry=null;
+function vlogRender(){
+  const L=vlogGet().slice().reverse(), box=$("#vlogList");
+  box.innerHTML=L.length?L.map(e=>`<div style="padding:4px 2px;border-bottom:1px solid #2c3744"><span style="opacity:.6">${esc((e.ts||"").slice(5,16).replace("T"," "))}</span> <b>${e.statut==="signale"?"⚑":"⚠"}</b> « ${esc(e.dit)} » → <i>${esc(e.resultat||"")}</i>${e.voulu?` <span style="color:#9be7c4">· voulu : ${esc(e.voulu)}</span>`:""}</div>`).join(""):"<i>Journal vide.</i>";
+}
+$("#voiceLogBtn").onclick=()=>{ $("#vlogWhere").textContent=serverLogOn()?"Enregistré sur ce poste (navigateur) et envoyé au serveur interne de votre établissement.":"Stocké uniquement sur ce poste (navigateur), jamais envoyé."; vlogRender(); $("#vlogDlg").showModal(); };
+$("#vlogClose").onclick=()=>$("#vlogDlg").close();
+$("#vlogClear").onclick=()=>{ if(confirm("Vider le journal vocal ?")){ store.set(VLOG_KEY,"[]"); vlogRender(); vlogCount(); } };
+$("#vlogExport").onclick=()=>{
+  const blob=new Blob([JSON.stringify({version:1,export:new Date().toISOString(),entrees:vlogGet()},null,1)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="journal_vocal_"+new Date().toISOString().slice(0,10)+".json"; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+};
+$("#vlogCopy").onclick=async()=>{ try{ await navigator.clipboard.writeText(JSON.stringify(vlogGet(),null,1)); toast("Journal copié"); }catch(e){ toast("Copie impossible : utilisez Exporter"); } };
+$("#voiceFlag").onclick=()=>{
+  if(!lastEntry){ toast("Aucune phrase à signaler"); return; }
+  const voulu=prompt("Phrase mal interprétée :\n« "+lastEntry.dit+" » → "+lastEntry.resultat+"\n\nQu'aviez-vous voulu dire ? (facultatif)","");
+  if(voulu===null) return;
+  vlogAdd({statut:"signale",dit:lastEntry.dit,ops:lastEntry.ops,resultat:lastEntry.resultat,voulu:voulu.trim()}); toast("Signalé dans le journal");
+};
+function vHandle(transcript){
+  const ops=vParse(transcript), log=vApply(ops);
+  const err=!log.length || log.some(x=>/\?|ignoré|⚠/.test(x));
+  vlast.textContent=`« ${transcript.trim()} »  →  ${log.length?log.join(" · "):"⚠ non compris : répétez"}`; vlive.textContent="";
+  lastEntry={dit:transcript.trim(),ops:JSON.stringify(ops),resultat:log.join(" · ")};
+  if(err) vlogAdd({statut:"erreur",dit:lastEntry.dit,ops:lastEntry.ops,resultat:lastEntry.resultat||"non compris"});
+  vlast.classList.toggle("err",err); document.title=(err?"⚠ ":"🎤 ")+TITLE0; beep(err?"err":"ok");
+}
+function micStart(){
+  if(!SR){ toast("Reconnaissance vocale indisponible dans ce navigateur (utiliser Chrome ou Edge)"); return; }
+  if(!store.get("pbx.voice.ok")){
+    if(!confirm("La dictée utilise la reconnaissance vocale du navigateur, qui envoie l'audio à un service en ligne (Google pour Chrome).\n\nNe dictez ni nom ni identifiant de patient : uniquement les chiffres et les sites.\n\nActiver la dictée ?")) return;
+    store.set("pbx.voice.ok","1");
+  }
+  const rec=new SR(); rec.lang="fr-FR"; rec.continuous=true; rec.interimResults=true; rec.maxAlternatives=1;
+  rec.onresult=e=>{
+    let interim="";
+    for(let k=e.resultIndex;k<e.results.length;k++){
+      const r=e.results[k];
+      if(r.isFinal) vHandle(r[0].transcript); else interim+=r[0].transcript;
+    }
+    if(interim) vlive.textContent="… "+interim;
+  };
+  rec.onerror=e=>{
+    const msg={"not-allowed":"Micro refusé ou indisponible (sur le RDS : redirection audio du micro activée ?)","audio-capture":"Aucun micro détecté (redirection audio du RDS ?)","network":"Reconnaissance vocale injoignable (réseau / proxy)"}[e.error];
+    if(msg){ toast(msg); micStop(); }
+  };
+  rec.onend=()=>{ if(mic.on){ try{ rec.start(); }catch(err){} } };   // Chrome coupe après un silence : on relance
+  mic.rec=rec; mic.on=true; pinned=false; audioInit();
+  try{ rec.start(); }catch(err){}
+  micUI(); vlive.textContent="parlez…"; vlast.textContent="";
+  if(!isDirty()){ voiceMode=true; let t; try{ t=firstField(turboRows(),"taille"); } finally { voiceMode=false; } if(t) t.focus(); }
+  vCur();   // remet le curseur dans le tableau
+}
+function micStop(){ document.title=TITLE0; mic.on=false; try{ mic.rec&&mic.rec.stop(); }catch(e){} micUI(); }
+bMic.onclick=()=> mic.on ? micStop() : micStart();
+$("#voiceStop").onclick=micStop;
+vlogCount();
+const vs=$("#voiceSnd"); vs.checked=sndOn(); vs.onchange=()=>{ store.set("pbx.voice.snd",vs.checked?"1":"0"); if(vs.checked) beep("ok"); };
+if(!SR){ bMic.title="Reconnaissance vocale indisponible dans ce navigateur (utiliser Chrome ou Edge)"; bMic.style.opacity=".55"; }
+document.addEventListener("keydown",e=>{ if(e.altKey&&e.key.toLowerCase()==="m"){ e.preventDefault(); bMic.click(); } });
+
+/* =====================================================================
+   Démarrage
+   ===================================================================== */
+state.modelId = store.get("pbx.last"); if(!TPL.some(t=>t.id===state.modelId)) state.modelId=TPL[0].id;
+fillModelSelect(); buildRows(); renderAll();
+window.__pbx={state,compute,conclusionText,tableHTML,tableTSV,vParse,vApply,get TPL(){return TPL;}};
+</script>
+</body>
+</html>
